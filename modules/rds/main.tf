@@ -34,7 +34,7 @@ resource "aws_db_parameter_group" "db_param_group" {
 
 resource "aws_db_instance" "lanchonete_db" {
   identifier             = "${var.db_name}"
-  instance_class         = "db.t2.micro"
+  instance_class         = "db.t3.micro"
   allocated_storage      = 5
   engine                 = "postgres"
   engine_version         = "15.3"
