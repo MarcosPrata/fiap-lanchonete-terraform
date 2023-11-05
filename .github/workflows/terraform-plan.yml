@@ -5,7 +5,7 @@ on:
   pull_request:
 
 env:
-  TF_CLOUD_ORGANIZATION: "terraform-fiap-pos"
+  TF_CLOUD_ORGANIZATION: "fiap-lanchonete-terraform"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "terraform-github-actions"
   CONFIG_DIRECTORY: "./"
