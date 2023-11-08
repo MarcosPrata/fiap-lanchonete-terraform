@@ -23,7 +23,7 @@ resource "aws_security_group" "rds_sec_group" {
 }
 
 resource "aws_db_parameter_group" "db_param_group" {
-  name   = "${var.db_name}"
+  name   = "${local.db_name}"
   family = "postgres15"
 
   parameter {
@@ -33,7 +33,7 @@ resource "aws_db_parameter_group" "db_param_group" {
 }
 
 resource "aws_db_instance" "lanchonete_db" {
-  identifier             = "${var.db_name}"
+  identifier             = "${local.db_name}"
   instance_class         = "db.t3.micro"
   allocated_storage      = 5
   engine                 = "postgres"
