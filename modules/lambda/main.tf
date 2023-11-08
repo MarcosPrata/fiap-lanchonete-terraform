@@ -12,3 +12,13 @@ resource "aws_lambda_function" "lambda" {
   handler          = "index.handler"
   runtime          = "nodejs14.x"
 }
+
+module "ecr" {
+  source                = "../ecr"
+  app_env               = var.app_env
+  project_name          = local.lambda_authorizer_name
+  tags                  = var.tags
+  image_tag_mutability  = "IMMUTABLE"
+  scan_on_push          = true
+  expiration_after_days = 7
+}
