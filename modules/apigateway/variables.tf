@@ -5,7 +5,6 @@ variable "app_env" {
 
 variable "project_name" {
   type = string
-  type = string
   description = "(Required) Nome do projeto"
 }
 
