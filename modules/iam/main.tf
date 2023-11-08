@@ -1,4 +1,4 @@
-resource "aws_iam_user" "apigateway_ci" {
+resource "aws_iam_user" "apigateway" {
   name = "lanchonete_apigateway_deploy_user_${var.app_env}"
 
   tags = merge(
@@ -8,13 +8,13 @@ resource "aws_iam_user" "apigateway_ci" {
   )
 }
 
-resource "aws_iam_access_key" "apigateway_ci" {
-  user = aws_iam_user.apigateway_ci.name
+resource "aws_iam_access_key" "apigateway" {
+  user = aws_iam_user.apigateway.name
 }
 
-resource "aws_iam_user_policy" "apigateway_ci" {
-  name = "lanchonete_apigateway_ci_policy_${var.app_env}"
-  user = aws_iam_user.apigateway_ci.name
+resource "aws_iam_user_policy" "apigateway" {
+  name = "lanchonete_apigateway_policy_${var.app_env}"
+  user = aws_iam_user.apigateway.name
 
   policy = <<EOF
 {
@@ -30,9 +30,6 @@ resource "aws_iam_user_policy" "apigateway_ci" {
 }
 EOF
 }
-
-
-
 
 resource "aws_iam_role" "lambda_role" {
   name = "${var.project_name}-role"

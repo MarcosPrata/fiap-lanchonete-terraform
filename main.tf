@@ -1,8 +1,8 @@
-module "rds" {
-  source       = "./modules/rds"
-  tags         = local.tags
-  project_name = var.project_name
-}
+# module "rds" {
+#   source       = "./modules/rds"
+#   tags         = local.tags
+#   project_name = var.project_name
+# }
 
 module "iam" {
   source       = "./modules/iam"
@@ -30,3 +30,17 @@ module "apigateway" {
   lambda_authorizer_access_role_arn = module.iam.iam_lambda_role
 }
 
+module "ecr" {
+  source                = "./modules/ecr"
+  app_env               = var.app_env
+  project_name          = var.project_name
+  tags                  = local.tags
+  image_tag_mutability  = "MUTABLE"
+  scan_on_push          = true
+  expiration_after_days = 7
+}
+
+module "ecs" {
+  source     = "./modules/ecs"
+  aws_region = var.aws_region
+}
