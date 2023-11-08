@@ -9,7 +9,7 @@ variable "project_name" {
 }
 
 variable "region" {
-  type        = map(string)
+  type        = string
   description = "(Required) AWS Region"
 }
 
