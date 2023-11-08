@@ -1,8 +1,9 @@
-# module "rds" {
-#   source       = "./modules/rds"
-#   tags         = local.tags
-#   project_name = var.project_name
-# }
+module "rds" {
+  source       = "./modules/rds"
+  tags         = local.tags
+  project_name = var.project_name
+  app_env = var.app_env
+}
 
 module "iam" {
   source       = "./modules/iam"

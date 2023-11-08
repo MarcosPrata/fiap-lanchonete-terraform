@@ -46,7 +46,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "${var.project_name}-policy"
+  name = "${var.project_name}-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -57,7 +57,7 @@ resource "aws_iam_policy" "policy" {
         "logs:PutLogEvents"
       ]
       Resource = ["arn:aws:logs:*:*:*"]
-    },{
+      }, {
       Effect = "Allow"
       Action = [
         "ec2:CreateNetworkInterface",
@@ -71,5 +71,50 @@ resource "aws_iam_policy" "policy" {
 
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
   policy_arn = aws_iam_policy.policy.arn
-  role = aws_iam_role.lambda_role.name
+  role       = aws_iam_role.lambda_role.name
+}
+
+
+resource "aws_iam_role" "task_definition_role" {
+  name = "ecsTaskExecutionRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_policy" "ecr_policy" {
+  name        = "ECRAuthorizationPolicy"
+  description = "Policy for ECR authorization token"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ecr:*",
+          "ecs:*",
+          "logs:*",
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_ecr_policy" {
+  policy_arn = aws_iam_policy.ecr_policy.arn
+  role       = aws_iam_role.task_definition_role.name
+}
+
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/lanchonete-api-${var.app_env}"
+  retention_in_days = 7  
 }
