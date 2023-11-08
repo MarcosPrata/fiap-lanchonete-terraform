@@ -26,7 +26,7 @@ module "apigateway" {
   app_env                           = var.app_env
   project_name                      = var.project_name
   tags                              = local.tags
-  lambda_authorizer_arn             = module.lambda.lambda_function_arn
+  lambda_authorizer_invoke_arn      = module.lambda.lambda_function_invoke_arn
   lambda_authorizer_access_role_arn = module.iam.iam_lambda_role
 }
 

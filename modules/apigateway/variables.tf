@@ -6,7 +6,7 @@ variable "project_name" {
 
 variable "tags" {}
 
-variable "lambda_authorizer_arn" {
+variable "lambda_authorizer_invoke_arn" {
   type = string
 }
 
