@@ -1,6 +1,6 @@
 resource "aws_security_group" "sg" {
   name   = "ecs-sg"
-  vpc_id = aws_vpc.main.id
+  vpc_id = var.ecs_vpc_id
 
   ingress {
     from_port   = 8080

@@ -1,8 +1,15 @@
+module "vpc" {
+  source = "./modules/vpc"
+  tags   = local.tags
+}
+
 module "rds" {
-  source       = "./modules/rds"
-  tags         = local.tags
-  project_name = var.project_name
-  app_env = var.app_env
+  source                = "./modules/rds"
+  tags                  = local.tags
+  project_name          = var.project_name
+  app_env               = var.app_env
+  rds_vpc_id            = module.vpc.vpc_id
+  rds_service_subnet_id = module.vpc.public_subnet_id
 }
 
 module "iam" {
@@ -42,6 +49,10 @@ module "ecr" {
 }
 
 module "ecs" {
-  source     = "./modules/ecs"
-  aws_region = var.aws_region
+  source                = "./modules/ecs"
+  aws_region            = var.aws_region
+  app_env               = var.app_env
+  project_name          = var.project_name
+  ecs_vpc_id            = module.vpc.vpc_id
+  ecs_service_subnet_id = module.vpc.public_subnet_id
 }

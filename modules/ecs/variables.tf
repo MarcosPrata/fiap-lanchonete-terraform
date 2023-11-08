@@ -4,14 +4,22 @@ variable "aws_region" {
   description = "(Optional) Aws region. default=us-east-1"
 }
 
-variable "vpc_cidr" {
+variable "project_name" {
   type        = string
-  default     = "10.0.0.0/16"
-  description = "(Optional) CIDR block. default=10.0.0.0/16"
+  description = "(Required) Nome do Projeto."
 }
 
-variable "availability_zones" {
-  type    = string
-  default = "us-east-1a"
-  description = "(Optional) Zona de disponibilidade. default=us-east-1a"
+variable "app_env" {
+  type        = string
+  description = "(Required) Ambiente."
+}
+
+variable "ecs_vpc_id" {
+  type        = string
+  description = "(Required) Id da vpc"
+}
+
+variable "ecs_service_subnet_id" {
+  type        = string
+  description = "(Required) Id da subrede"
 }

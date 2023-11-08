@@ -42,7 +42,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     assign_public_ip = true
     security_groups  = [aws_security_group.sg.id]
-    subnets          = [aws_subnet.subnet.id]
+    subnets          = [var.ecs_service_subnet_id]
   }
   lifecycle {
     ignore_changes = [task_definition]

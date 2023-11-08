@@ -1,9 +1,5 @@
-data "aws_vpc" "default" {
-  default = true
-}
-
 resource "aws_security_group" "rds_sec_group" {
-  vpc_id      = "${data.aws_vpc.default.id}"
+  vpc_id      = var.rds_vpc_id
   name        = "lanchonete_rds"
   description = "Allow all inbound for Postgres"
   ingress {
