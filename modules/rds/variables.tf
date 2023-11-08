@@ -1,6 +1,5 @@
-variable "db_name" {
-  type        = string
-  description = "An environment namespace for the infrastructure."
+variable "project_name" {
+  type = string
 }
 
 variable "tags" {}
