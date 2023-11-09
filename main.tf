@@ -1,6 +1,15 @@
-module "vpc" {
-  source = "./modules/vpc"
-  tags   = local.tags
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnet" "default1" {
+  default_for_az    = true
+  availability_zone = "us-east-1a"
+}
+
+data "aws_subnet" "default2" {
+  default_for_az    = true
+  availability_zone = "us-east-1b"
 }
 
 module "rds" {
@@ -8,10 +17,10 @@ module "rds" {
   tags         = local.tags
   project_name = var.project_name
   app_env      = var.app_env
-  vpc_id       = module.vpc.vpc_id
+  vpc_id       = data.aws_vpc.default.id
   subnet_ids = [
-    module.vpc.private_subnet1_id,
-    module.vpc.private_subnet2_id
+    data.aws_subnet.default1.id,
+    data.aws_subnet.default2.id
   ]
 }
 
@@ -41,8 +50,8 @@ module "apigateway" {
   lambda_authorizer_access_role_arn = module.iam.iam_lambda_role
   ecs_alb_listener_arn              = module.ecs.ecs_alb_listener_arn
   subnet_ids = [
-    module.vpc.private_subnet1_id,
-    module.vpc.private_subnet2_id
+    data.aws_subnet.default1.id,
+    data.aws_subnet.default2.id
   ]
 }
 
@@ -61,10 +70,10 @@ module "ecs" {
   aws_region   = var.aws_region
   app_env      = var.app_env
   project_name = var.project_name
-  vpc_id       = module.vpc.vpc_id
-  subnet_id    = module.vpc.public_subnet_id
+  vpc_id       = data.aws_vpc.default.id
+  subnet_id    = data.aws_subnet.default1.id
   subnet_ids = [
-    module.vpc.private_subnet1_id,
-    module.vpc.private_subnet2_id
+    data.aws_subnet.default1.id,
+    data.aws_subnet.default2.id
   ]
 }
