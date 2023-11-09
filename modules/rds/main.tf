@@ -1,25 +1,5 @@
-resource "aws_security_group" "rds_sec_group" {
-  vpc_id      = var.rds_vpc_id
-  name        = "lanchonete_rds"
-  description = "Allow all inbound for Postgres"
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = var.tags
-}
-
 resource "aws_db_parameter_group" "db_param_group" {
-  name   = "${local.db_name}"
+  name   = local.db_name
   family = "postgres15"
 
   parameter {
@@ -29,15 +9,25 @@ resource "aws_db_parameter_group" "db_param_group" {
 }
 
 resource "aws_db_instance" "lanchonete_db" {
-  identifier             = "${local.db_name}"
-  instance_class         = "db.t3.micro"
-  allocated_storage      = 5
-  engine                 = "postgres"
-  engine_version         = "15.3"
-  username               = "postgres"
-  password               = "postgres"
-  skip_final_snapshot    = true
-  publicly_accessible    = true
-  parameter_group_name   = aws_db_parameter_group.db_param_group.name
-  vpc_security_group_ids = [aws_security_group.rds_sec_group.id]
+  identifier           = local.db_name
+  instance_class       = "db.t3.micro"
+  allocated_storage    = 5
+  engine               = "postgres"
+  engine_version       = "15.3"
+  username             = "postgres"
+  password             = "postgres"
+  skip_final_snapshot  = true
+  publicly_accessible  = true
+  parameter_group_name = aws_db_parameter_group.db_param_group.name
+  db_subnet_group_name = aws_db_subnet_group.aurora_subnet_group.name
+  vpc_security_group_ids = [
+    aws_security_group.rds_sec_group.id,
+    aws_security_group.ec2_security_group.id
+  ]
+}
+
+resource "aws_db_subnet_group" "aurora_subnet_group" {
+  name       = "tf-rds-${var.project_name}"
+  subnet_ids = var.subnet_ids
+  tags       = var.tags
 }

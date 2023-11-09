@@ -11,8 +11,14 @@ output "public_subnet_id" {
   sensitive   = false
 }
 
-output "private_subnet_id" {
+output "private_subnet1_id" {
   description = "Private Subnet Id"
-  value       = aws_subnet.private_subnet.id
+  value       = aws_subnet.private_subnet1.id
+  sensitive   = false
+}
+
+output "private_subnet2_id" {
+  description = "Private Subnet Id"
+  value       = aws_subnet.private_subnet2.id
   sensitive   = false
 }

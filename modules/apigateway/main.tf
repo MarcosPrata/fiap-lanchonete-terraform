@@ -1,36 +1,31 @@
-resource "aws_api_gateway_rest_api" "rest_api" {
-  name = local.api_name
+resource "aws_apigatewayv2_api" "apigw_http_endpoint" {
+  name          = local.api_name
+  protocol_type = "HTTP"
 }
 
-resource "aws_api_gateway_resource" "resource" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
-  path_part   = "{proxy+}"
+resource "aws_apigatewayv2_route" "apigw_route" {
+  api_id     = aws_apigatewayv2_api.apigw_http_endpoint.id
+  route_key  = "ANY /{proxy+}"
+  target     = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on = [aws_apigatewayv2_integration.apigw_integration]
+}
+resource "aws_apigatewayv2_stage" "apigw_stage" {
+  api_id      = aws_apigatewayv2_api.apigw_http_endpoint.id
+  name        = "$default"
+  auto_deploy = true
+  depends_on  = [aws_apigatewayv2_api.apigw_http_endpoint]
 }
 
-resource "aws_api_gateway_method" "proxy" {
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-  resource_id   = aws_api_gateway_resource.resource.id
-  http_method   = "ANY"
-  authorization = "NONE"
+output "apigw_endpoint" {
+  value       = aws_apigatewayv2_api.apigw_http_endpoint.api_endpoint
+  description = "API Gateway Endpoint"
 }
 
-resource "aws_api_gateway_authorizer" "authorizer" {
-  name                   = "${var.project_name}_lambda_authorizer"
-  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
-  type                   = "TOKEN"
-  authorizer_uri          = var.lambda_authorizer_invoke_arn
-  authorizer_credentials  = var.lambda_authorizer_access_role_arn
-  identity_validation_expression = "^(Bearer)[ ]?(.*)$"
-}
-
-# resource "aws_api_gateway_integration" "integration" {
-#   rest_api_id = aws_api_gateway_rest_api.rest_api.id
-#   resource_id = aws_api_gateway_method.proxy.resource_id
-#   http_method = aws_api_gateway_method.proxy.http_method
-
-#   integration_http_method = "POST"
-#   type                    = "AWS_PROXY"
-#   uri                     = module.lambda_authorizer.lambda_function_arn
+# resource "aws_api_gateway_authorizer" "authorizer" {
+#   name                   = "${var.project_name}_lambda_authorizer"
+#   rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+#   type                   = "TOKEN"
+#   authorizer_uri          = var.lambda_authorizer_invoke_arn
+#   authorizer_credentials  = var.lambda_authorizer_access_role_arn
+#   identity_validation_expression = "^(Bearer)[ ]?(.*)$"
 # }
-

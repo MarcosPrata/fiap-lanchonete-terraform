@@ -1,22 +1,23 @@
 resource "aws_lb" "ecs_alb" {
-  name                       = "${var.project_name}-${var.app_env}-lb"
-  internal                   = false
-  load_balancer_type         = "application"
-  subnets                    = [var.ecs_service_subnet_id]
-  enable_deletion_protection = false
-  enable_http2               = true
-  idle_timeout               = 60
+  load_balancer_type = "application"
+  internal           = true
+  subnets            = var.subnet_ids
+  security_groups    = [aws_security_group.lb_security_group.id]
 }
 
-resource "aws_lb_listener" "example" {
+resource "aws_lb_target_group" "alb_ecs_tg" {
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+}
+
+resource "aws_lb_listener" "ecs_alb_listener" {
   load_balancer_arn = aws_lb.ecs_alb.arn
-  port              = 80
+  port              = "8080"
   protocol          = "HTTP"
   default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      status_code  = "200"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb_ecs_tg.arn
   }
 }

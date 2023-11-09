@@ -14,12 +14,17 @@ variable "app_env" {
   description = "(Required) Ambiente."
 }
 
-variable "ecs_vpc_id" {
+variable "vpc_id" {
   type        = string
   description = "(Required) Id da vpc"
 }
 
-variable "ecs_service_subnet_id" {
+variable "subnet_ids" {
+  type        = set(string)
+  description = "(Required) Id da subrede"
+}
+
+variable "subnet_id" {
   type        = string
   description = "(Required) Id da subrede"
 }
