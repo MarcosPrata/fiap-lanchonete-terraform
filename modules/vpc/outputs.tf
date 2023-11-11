@@ -4,15 +4,20 @@ output "vpc_id" {
   sensitive   = false
 }
 
-
-output "public_subnet_id" {
-  description = "Public Subnet Id"
-  value       = aws_subnet.public_subnet.id
+output "private_subnet_ids" {
+  description = "Private subnet Ids"
   sensitive   = false
+  value = [
+    aws_subnet.private_subnet_a.id,
+    aws_subnet.private_subnet_b.id
+  ]
 }
 
-output "private_subnet_id" {
-  description = "Private Subnet Id"
-  value       = aws_subnet.private_subnet.id
+output "public_subnet_ids" {
+  description = "Public subnet Ids"
   sensitive   = false
+  value = [
+    aws_subnet.public_subnet_a.id,
+    aws_subnet.public_subnet_b.id
+  ]
 }

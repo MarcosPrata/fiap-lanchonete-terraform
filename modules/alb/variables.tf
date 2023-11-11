@@ -23,18 +23,19 @@ variable "tags" {
   description = "(Required) Tags de identificação do projeto"
 }
 
-variable "ecs_service_subnet_ids" {
-  type        = set(string)
-  description = "(Required) Id da subrede"
-}
-
 variable "application_port" {
   type        = string
   default     = "80"
   description = "(Optional) porta na qual o container espera ser chamado. default=80"
 }
 
-variable "load_balancer_target_group_arn" {
+variable "load_balancer_port" {
   type        = string
-  description = "(Required) Arn do target group do load balancer"
+  default     = "80"
+  description = "(Optional) porta na qual o load balancer espera ser chamado. default=80"
+}
+
+variable "load_balancer_subnet_ids" {
+  type        = set(string)
+  description = "(Required)"
 }

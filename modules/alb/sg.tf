@@ -1,5 +1,5 @@
-resource "aws_security_group" "ecs_security_group" {
-  name   = "${var.project_name}-${var.app_env}-ecs-security-group"
+resource "aws_security_group" "alb_security_group" {
+  name   = "${var.project_name}-${var.app_env}-alb-security-group"
   vpc_id = var.vpc_id
 
   ingress {

@@ -13,12 +13,12 @@ variable "tags" {
   description = "(Required) Tags de identificação do projeto"
 }
 
-variable "rds_vpc_id" {
+variable "vpc_id" {
   type        = string
   description = "(Required) Id da vpc"
 }
 
-variable "rds_service_subnet_id" {
-  type        = string
-  description = "(Required) Id da subrede"
+variable "subnet_ids" {
+  type        = set(string)
+  description = "(Required) Ids de subrede"
 }
