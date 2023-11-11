@@ -1,6 +1,7 @@
 resource "aws_db_parameter_group" "db_param_group" {
   name   = local.db_name
   family = "postgres15"
+  tags   = var.tags
 
   parameter {
     name  = "log_connections"
@@ -17,9 +18,10 @@ resource "aws_db_instance" "lanchonete_db" {
   username             = "postgres"
   password             = "postgres"
   skip_final_snapshot  = true
-  publicly_accessible  = true
+  publicly_accessible  = false
   parameter_group_name = aws_db_parameter_group.db_param_group.name
   db_subnet_group_name = aws_db_subnet_group.aurora_subnet_group.name
+  tags                 = var.tags
   vpc_security_group_ids = [
     aws_security_group.rds_sec_group.id,
     aws_security_group.ec2_security_group.id

@@ -1,51 +1,101 @@
+# resource "aws_ecs_service" "ecs_service" {
+#   name             = "${var.project_name}-${var.app_env}-service"
+#   cluster          = aws_ecs_cluster.ecs_cluster.id
+#   task_definition  = aws_ecs_task_definition.ecs_task_definition.arn
+#   desired_count    = 1
+#   launch_type      = "FARGATE"
+#   platform_version = "LATEST"
+#   depends_on       = [aws_lb_target_group.alb_ecs_tg, aws_lb_listener.ecs_alb_listener]
+#   tags             = var.tags
+#   load_balancer {
+#     target_group_arn = aws_lb_target_group.alb_ecs_tg.arn
+#     container_name   = "lanchonete"
+#     container_port   = 8080
+#   }
+
+#   network_configuration {
+#     security_groups = [aws_security_group.ecs_security_group.id]
+#     subnets         = var.subnet_ids
+#   }
+# }
+
+# resource "aws_ecs_task_definition" "ecs_task_definition" {
+#   family = "service"
+#   tags   = var.tags
+#   container_definitions = jsonencode([
+#     {
+#       name      = "lanchonete"
+#       image     = "nginx"
+#       essential = true
+#       portMappings = [
+#         {
+#           containerPort = 8080
+#           protocol      = "tcp"
+#         }
+#       ]
+#     }
+#   ])
+#   cpu                      = 512
+#   memory                   = 1024
+#   execution_role_arn       = aws_iam_role.ecs_task_exec_role.arn
+#   task_role_arn            = aws_iam_role.ecs_task_role.arn
+#   requires_compatibilities = ["FARGATE"]
+#   network_mode             = "awsvpc"
+# }
+
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = "${var.project_name}-${var.app_env}-cluster"
+  tags = var.tags
   setting {
     name  = "containerInsights"
     value = "enabled"
   }
 }
 
-resource "aws_ecs_service" "ecs_service" {
-  name             = "${var.project_name}-${var.app_env}-service"
-  cluster          = aws_ecs_cluster.ecs_cluster.id
-  task_definition  = aws_ecs_task_definition.ecs_task_definition.arn
-  desired_count    = 1
-  launch_type      = "FARGATE"
-  platform_version = "LATEST"
-  depends_on       = [aws_lb_target_group.alb_ecs_tg, aws_lb_listener.ecs_alb_listener]
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.alb_ecs_tg.arn
-    container_name   = "lanchonete"
-    container_port   = 8080
-  }
-
-  network_configuration {
-    security_groups = [aws_security_group.ecs_security_group.id]
-    subnets         = var.subnet_ids
-  }
-}
-
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family = "service"
+  family                   = "${var.project_name}-task-definition"
+  network_mode             = "awsvpc" #Cria o Elastic Network Interface
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = 256
+  memory                   = 1024
+  execution_role_arn       = aws_iam_role.ecs_task_exec_role.arn
+  # task_role_arn          = aws_iam_role.ecs_task_role.arn é opcional
+  tags = var.tags
   container_definitions = jsonencode([
     {
-      name      = "lanchonete"
+      name      = "${var.project_name}-${var.app_env}-container"
       image     = "nginx"
       essential = true
       portMappings = [
         {
-          containerPort = 8080
+          containerPort = 80
           protocol      = "tcp"
         }
       ]
     }
   ])
-  cpu                      = 512
-  memory                   = 1024
-  execution_role_arn       = aws_iam_role.ecs_task_exec_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
+}
+
+resource "aws_ecs_service" "ecs_service" {
+  name                              = "${var.project_name}-${var.app_env}-service"
+  cluster                           = aws_ecs_cluster.ecs_cluster.id
+  task_definition                   = aws_ecs_task_definition.ecs_task_definition.arn
+  health_check_grace_period_seconds = 40
+  desired_count                     = 1
+  launch_type                       = "FARGATE"
+  platform_version                  = "LATEST"
+  depends_on                        = [aws_lb_target_group.ecs_target_group, aws_lb_listener.ecs_alb_listener]
+  tags                              = var.tags
+  force_new_deployment              = true
+
+  network_configuration {
+    assign_public_ip = true
+    subnets          = var.ecs_service_subnet_ids
+    security_groups  = [aws_security_group.ecs_security_group.id]
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ecs_target_group.arn
+    container_name   = "${var.project_name}-${var.app_env}-container"
+    container_port   = var.application_port
+  }
 }

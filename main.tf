@@ -1,15 +1,9 @@
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnet" "default1" {
-  default_for_az    = true
-  availability_zone = "us-east-1a"
-}
-
-data "aws_subnet" "default2" {
-  default_for_az    = true
-  availability_zone = "us-east-1b"
+module "vpc" {
+  source       = "./modules/vpc"
+  app_env      = var.app_env
+  tags         = local.tags
+  aws_region   = var.aws_region
+  project_name = var.project_name
 }
 
 module "rds" {
@@ -17,11 +11,8 @@ module "rds" {
   tags         = local.tags
   project_name = var.project_name
   app_env      = var.app_env
-  vpc_id       = data.aws_vpc.default.id
-  subnet_ids = [
-    data.aws_subnet.default1.id,
-    data.aws_subnet.default2.id
-  ]
+  vpc_id       = module.vpc.vpc_id
+  subnet_ids   = module.vpc.private_subnet_ids
 }
 
 module "iam" {
@@ -48,11 +39,8 @@ module "apigateway" {
   tags                              = local.tags
   lambda_authorizer_invoke_arn      = module.lambda_authorizer.lambda_function_invoke_arn
   lambda_authorizer_access_role_arn = module.iam.iam_lambda_role
-  ecs_alb_listener_arn              = module.ecs.ecs_alb_listener_arn
-  subnet_ids = [
-    data.aws_subnet.default1.id,
-    data.aws_subnet.default2.id
-  ]
+  ecs_alb_listener_arn              = "" #module.ecs.ecs_alb_listener_arn
+  subnet_ids                        = module.vpc.public_subnet_ids
 }
 
 module "ecr" {
@@ -65,15 +53,23 @@ module "ecr" {
   expiration_after_days = 7
 }
 
+
+# module "eks" {
+#   source             = "./modules/eks"
+#   aws_region         = var.aws_region
+#   app_env            = var.app_env
+#   project_name       = var.project_name
+#   tags               = local.tags
+#   cluster_subnet_ids = module.vpc.public_subnet_ids
+# }
+
 module "ecs" {
-  source       = "./modules/ecs"
-  aws_region   = var.aws_region
-  app_env      = var.app_env
-  project_name = var.project_name
-  vpc_id       = data.aws_vpc.default.id
-  subnet_id    = data.aws_subnet.default1.id
-  subnet_ids = [
-    data.aws_subnet.default1.id,
-    data.aws_subnet.default2.id
-  ]
+  source                   = "./modules/ecs"
+  aws_region               = var.aws_region
+  app_env                  = var.app_env
+  project_name             = var.project_name
+  vpc_id                   = module.vpc.vpc_id
+  ecs_service_subnet_ids   = module.vpc.private_subnet_ids
+  load_balancer_subnet_ids = module.vpc.public_subnet_ids
+  tags                     = local.tags
 }

@@ -1,7 +1,6 @@
 variable "aws_region" {
   type        = string
-  default     = "us-east-1"
-  description = "(Optional) Aws region. default=us-east-1"
+  description = "(Required) Aws region."
 }
 
 variable "project_name" {
@@ -19,12 +18,29 @@ variable "vpc_id" {
   description = "(Required) Id da vpc"
 }
 
-variable "subnet_ids" {
+variable "application_port" {
+  type        = string
+  default     = "80"
+  description = "(Optional) porta na qual o container espera ser chamado. default=80"
+}
+
+variable "incomming_load_balancer_port" {
+  type        = string
+  default     = "80"
+  description = "(Optional) porta na qual o load balancer espera ser chamado. default=80"
+}
+
+variable "ecs_service_subnet_ids" {
   type        = set(string)
   description = "(Required) Id da subrede"
 }
 
-variable "subnet_id" {
-  type        = string
-  description = "(Required) Id da subrede"
+variable "load_balancer_subnet_ids" {
+  type        = set(string)
+  description = "(Required)"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "(Required) Tags de identificação do projeto"
 }

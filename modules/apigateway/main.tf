@@ -1,19 +1,21 @@
 resource "aws_apigatewayv2_api" "apigw_http_endpoint" {
   name          = local.api_name
   protocol_type = "HTTP"
+  tags          = var.tags
 }
 
-resource "aws_apigatewayv2_route" "apigw_route" {
-  api_id     = aws_apigatewayv2_api.apigw_http_endpoint.id
-  route_key  = "ANY /{proxy+}"
-  target     = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
-  depends_on = [aws_apigatewayv2_integration.apigw_integration]
-}
+# resource "aws_apigatewayv2_route" "apigw_route" {
+#   api_id     = aws_apigatewayv2_api.apigw_http_endpoint.id
+#   route_key  = "ANY /{proxy+}"
+#   target     = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+#   depends_on = [aws_apigatewayv2_integration.apigw_integration]
+# }
 resource "aws_apigatewayv2_stage" "apigw_stage" {
   api_id      = aws_apigatewayv2_api.apigw_http_endpoint.id
   name        = "$default"
   auto_deploy = true
   depends_on  = [aws_apigatewayv2_api.apigw_http_endpoint]
+  tags        = var.tags
 }
 
 output "apigw_endpoint" {
