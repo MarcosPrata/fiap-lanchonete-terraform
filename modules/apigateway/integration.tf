@@ -1,6 +1,6 @@
 resource "aws_apigatewayv2_vpc_link" "vpclink_apigw_to_alb" {
   name               = "vpclink_apigateway_to_alb"
-  security_group_ids = []
+  security_group_ids = [aws_security_group.vpc_link_security_group.id]
   subnet_ids         = var.subnet_ids
 }
 

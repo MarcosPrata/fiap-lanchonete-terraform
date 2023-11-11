@@ -1,4 +1,4 @@
-resource "aws_security_group" "ecs_security_group" {
+resource "aws_security_group" "vpc_link_security_group" {
   name   = "${var.project_name}-${var.app_env}-vpc-link-security-group"
   vpc_id = var.vpc_id
 
