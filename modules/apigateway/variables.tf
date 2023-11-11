@@ -28,7 +28,7 @@ variable "subnet_ids" {
   description = "(Required) ids das subnets para o vpc link"
 }
 
-variable "ecs_alb_listener_arn" {
+variable "alb_listener_arn" {
   type        = string
   description = "(Required) ARN do alb listener"
 }

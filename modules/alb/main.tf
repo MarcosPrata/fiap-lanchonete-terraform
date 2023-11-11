@@ -2,7 +2,7 @@ resource "aws_lb" "ecs_alb" {
   name               = "${var.project_name}-${var.app_env}-ecs-alb"
   load_balancer_type = "application"
   internal           = false
-  security_groups    = [aws_security_group.ecs_security_group.id]
+  security_groups    = [aws_security_group.alb_security_group.id]
   subnets            = var.load_balancer_subnet_ids
   tags               = var.tags
 }
@@ -19,9 +19,9 @@ resource "aws_lb_target_group" "ecs_target_group" {
   }
 }
 
-resource "aws_lb_listener" "ecs_alb_listener" {
+resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.ecs_alb.arn
-  port              = var.incomming_load_balancer_port
+  port              = var.load_balancer_port
   protocol          = "HTTP"
 
   default_action {
