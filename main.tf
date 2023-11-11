@@ -72,4 +72,5 @@ module "apigateway" {
   lambda_authorizer_access_role_arn = module.iam.iam_lambda_role
   alb_listener_arn                  = module.load_balancer.alb_listener_arn
   subnet_ids                        = module.vpc.public_subnet_ids
+  vpc_id                            = module.vpc.vpc_id
 }

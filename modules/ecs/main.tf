@@ -14,8 +14,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   cpu                      = 256
   memory                   = 1024
   execution_role_arn       = aws_iam_role.ecs_task_exec_role.arn
-  # task_role_arn          = aws_iam_role.ecs_task_role.arn é opcional
-  tags = var.tags
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  tags                     = var.tags
   container_definitions = jsonencode([
     {
       name      = "${var.project_name}-${var.app_env}-container"

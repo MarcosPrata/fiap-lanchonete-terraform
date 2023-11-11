@@ -8,6 +8,11 @@ variable "project_name" {
   description = "(Required) Nome do projeto"
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "(Required) Id da vpc"
+}
+
 variable "tags" {
   type        = map(string)
   description = "(Required) Tags de identificação do projeto"
